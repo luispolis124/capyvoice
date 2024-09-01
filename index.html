@@ -7,21 +7,57 @@
 </head>
 <body>
     <h1>Gerador de Áudio de Texto</h1>
+    
+    <label for="categoryName">Nome da Categoria:</label>
+    <input type="text" id="categoryName" placeholder="Digite o nome da categoria..."><br><br>
+
+    <label for="voiceSelect">Escolha a Voz:</label>
+    <select id="voiceSelect"></select><br><br>
+    
     <textarea id="textInput" rows="4" cols="50" placeholder="Digite o texto aqui..."></textarea><br><br>
     <button onclick="generateAudio()">Gerar Áudio</button>
 
     <script>
+        // Inicializa as vozes
+        let voices = [];
+
+        function populateVoiceList() {
+            voices = speechSynthesis.getVoices();
+            const voiceSelect = document.getElementById('voiceSelect');
+            voiceSelect.innerHTML = '';
+            voices.forEach((voice, index) => {
+                const option = document.createElement('option');
+                option.textContent = `${voice.name} (${voice.lang})`;
+                option.value = index;
+                voiceSelect.appendChild(option);
+            });
+        }
+
+        // Popula a lista de vozes quando estiverem carregadas
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = populateVoiceList;
+        }
+
         function generateAudio() {
             const textInput = document.getElementById("textInput").value;
-            
+            const voiceSelect = document.getElementById("voiceSelect");
+            const selectedVoiceIndex = voiceSelect.value;
+            const categoryName = document.getElementById("categoryName").value;
+
             if ('speechSynthesis' in window) {
                 const speech = new SpeechSynthesisUtterance(textInput);
-                speech.lang = 'pt-BR'; // Definindo o idioma para português do Brasil
+                speech.voice = voices[selectedVoiceIndex]; // Define a voz selecionada
+                speech.lang = voices[selectedVoiceIndex].lang; // Define o idioma da voz
+
+                console.log(`Nome da Categoria: ${categoryName}`); // Exibe o nome da categoria no console
                 window.speechSynthesis.speak(speech);
             } else {
                 alert("Desculpe, seu navegador não suporta a síntese de voz.");
             }
         }
+
+        // Chama a função para popular a lista de vozes ao carregar a página
+        window.onload = populateVoiceList;
     </script>
 </body>
 </html>
