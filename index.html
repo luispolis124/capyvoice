@@ -25,7 +25,7 @@
     <script>
         let voices = [];
         let customVoices = [
-            { name: "Mickey Mouse", lang: "en-US" } // Adicionando uma voz fictícia para "Mickey Mouse"
+            { name: "Mickey Mouse" } // Removendo o 'en-US' do título
         ];
 
         function populateVoiceList() {
@@ -42,7 +42,7 @@
                 // Adiciona a voz "Mickey Mouse"
                 customVoices.forEach((voice, index) => {
                     const option = document.createElement('option');
-                    option.textContent = `${voice.name} (${voice.lang})`;
+                    option.textContent = voice.name; // Apenas o nome da voz sem o idioma
                     option.value = `custom-${index}`; // Prefixo custom para diferenciar vozes fictícias
                     voiceSelect.appendChild(option);
                 });
