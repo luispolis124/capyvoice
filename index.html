@@ -24,58 +24,59 @@
 
     <script>
         let voices = [];
+        let customVoices = [
+            { name: "Mickey Mouse", lang: "en-US" } // Adicionando uma voz fictícia para "Mickey Mouse"
+        ];
 
-        // Função para popular a lista de vozes
         function populateVoiceList() {
             voices = speechSynthesis.getVoices();
             updateVoiceOptions(); // Atualiza as opções de voz com base na categoria selecionada
         }
 
-        // Função para atualizar as opções de voz com base na categoria selecionada
         function updateVoiceOptions() {
             const category = document.getElementById('categorySelect').value;
             const voiceSelect = document.getElementById('voiceSelect');
             voiceSelect.innerHTML = ''; // Limpa as opções atuais
 
             if (category === 'disney') {
-                const mickeyVoice = voices.find(voice => voice.name.includes('Mickey') || voice.name.includes('Google português'));
-                if (mickeyVoice) {
+                // Adiciona a voz "Mickey Mouse"
+                customVoices.forEach((voice, index) => {
                     const option = document.createElement('option');
-                    option.textContent = `${mickeyVoice.name} (${mickeyVoice.lang})`;
-                    option.value = mickeyVoice.name;
+                    option.textContent = `${voice.name} (${voice.lang})`;
+                    option.value = `custom-${index}`; // Prefixo custom para diferenciar vozes fictícias
                     voiceSelect.appendChild(option);
-                }
+                });
             }
 
             // Adicione mais condições aqui para outras categorias, se necessário
         }
 
-        // Popula a lista de vozes quando elas estiverem carregadas
         if (speechSynthesis.onvoiceschanged !== undefined) {
             speechSynthesis.onvoiceschanged = populateVoiceList;
         }
 
-        // Função para gerar áudio com base no texto e na voz selecionada
         function generateAudio() {
             const textInput = document.getElementById("textInput").value;
             const voiceSelect = document.getElementById("voiceSelect");
-            const selectedVoiceName = voiceSelect.value;
+            const selectedVoiceValue = voiceSelect.value;
 
             if ('speechSynthesis' in window) {
                 const speech = new SpeechSynthesisUtterance(textInput);
-                speech.voice = voices.find(voice => voice.name === selectedVoiceName); // Encontra a voz selecionada pelo nome
 
-                if (speech.voice) {
-                    window.speechSynthesis.speak(speech);
+                if (selectedVoiceValue.startsWith('custom-')) {
+                    const customVoiceIndex = parseInt(selectedVoiceValue.split('-')[1]);
+                    const customVoice = customVoices[customVoiceIndex];
+                    speech.text = `Este é um exemplo usando a voz do ${customVoice.name}.` + speech.text; // Simulação para voz "Mickey Mouse"
                 } else {
-                    alert("Voz selecionada não encontrada.");
+                    speech.voice = voices.find(voice => voice.name === selectedVoiceValue);
                 }
+
+                window.speechSynthesis.speak(speech);
             } else {
                 alert("Desculpe, seu navegador não suporta a síntese de voz.");
             }
         }
 
-        // Chama a função para popular a lista de vozes ao carregar a página
         window.onload = populateVoiceList;
     </script>
 </body>
