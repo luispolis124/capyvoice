@@ -9,52 +9,67 @@
     <h1>Gerador de Áudio de Texto</h1>
 
     <label for="categorySelect">Escolha a Categoria:</label>
-    <select id="categorySelect">
+    <select id="categorySelect" onchange="updateVoiceOptions()">
         <option value="disney">Disney</option>
-        <option value="mickey_mouse">Mickey Mouse</option>
-        <!-- Você pode adicionar mais opções de categoria aqui -->
+        <!-- Adicione mais categorias aqui, se necessário -->
     </select><br><br>
 
     <label for="voiceSelect">Escolha a Voz:</label>
-    <select id="voiceSelect"></select><br><br>
+    <select id="voiceSelect">
+        <!-- As opções de voz serão carregadas dinamicamente com base na categoria -->
+    </select><br><br>
 
     <textarea id="textInput" rows="4" cols="50" placeholder="Digite o texto aqui..."></textarea><br><br>
     <button onclick="generateAudio()">Gerar Áudio</button>
 
     <script>
-        // Inicializa as vozes
         let voices = [];
 
+        // Função para popular a lista de vozes
         function populateVoiceList() {
             voices = speechSynthesis.getVoices();
-            const voiceSelect = document.getElementById('voiceSelect');
-            voiceSelect.innerHTML = '';
-            voices.forEach((voice, index) => {
-                const option = document.createElement('option');
-                option.textContent = `${voice.name} (${voice.lang})`;
-                option.value = index;
-                voiceSelect.appendChild(option);
-            });
+            updateVoiceOptions(); // Atualiza as opções de voz com base na categoria selecionada
         }
 
-        // Popula a lista de vozes quando estiverem carregadas
+        // Função para atualizar as opções de voz com base na categoria selecionada
+        function updateVoiceOptions() {
+            const category = document.getElementById('categorySelect').value;
+            const voiceSelect = document.getElementById('voiceSelect');
+            voiceSelect.innerHTML = ''; // Limpa as opções atuais
+
+            if (category === 'disney') {
+                const mickeyVoice = voices.find(voice => voice.name.includes('Mickey') || voice.name.includes('Google português'));
+                if (mickeyVoice) {
+                    const option = document.createElement('option');
+                    option.textContent = `${mickeyVoice.name} (${mickeyVoice.lang})`;
+                    option.value = mickeyVoice.name;
+                    voiceSelect.appendChild(option);
+                }
+            }
+
+            // Adicione mais condições aqui para outras categorias, se necessário
+        }
+
+        // Popula a lista de vozes quando elas estiverem carregadas
         if (speechSynthesis.onvoiceschanged !== undefined) {
             speechSynthesis.onvoiceschanged = populateVoiceList;
         }
 
+        // Função para gerar áudio com base no texto e na voz selecionada
         function generateAudio() {
             const textInput = document.getElementById("textInput").value;
             const voiceSelect = document.getElementById("voiceSelect");
-            const selectedVoiceIndex = voiceSelect.value;
-            const categorySelect = document.getElementById("categorySelect").value;
+            const selectedVoiceName = voiceSelect.value;
 
             if ('speechSynthesis' in window) {
                 const speech = new SpeechSynthesisUtterance(textInput);
-                speech.voice = voices[selectedVoiceIndex]; // Define a voz selecionada
-                speech.lang = voices[selectedVoiceIndex].lang; // Define o idioma da voz
+                speech.voice = voices.find(voice => voice.name === selectedVoiceName); // Encontra a voz selecionada pelo nome
 
-                console.log(`Categoria Selecionada: ${categorySelect}`); // Exibe a categoria selecionada no console
-                window.speechSynthesis.speak(speech);
+                if (speech.voice) {
+                    window.speechSynthesis.speak(speech);
+                } else {
+                    alert("Voz selecionada não encontrada.");
+                }
             } else {
                 alert("Desculpe, seu navegador não suporta a síntese de voz.");
             }
