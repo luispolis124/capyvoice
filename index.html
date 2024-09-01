@@ -7,13 +7,17 @@
 </head>
 <body>
     <h1>Gerador de Áudio de Texto</h1>
-    
-    <label for="categoryName">Nome da Categoria:</label>
-    <input type="text" id="categoryName" placeholder="Digite o nome da categoria..."><br><br>
+
+    <label for="categorySelect">Escolha a Categoria:</label>
+    <select id="categorySelect">
+        <option value="disney">Disney</option>
+        <option value="mickey_mouse">Mickey Mouse</option>
+        <!-- Você pode adicionar mais opções de categoria aqui -->
+    </select><br><br>
 
     <label for="voiceSelect">Escolha a Voz:</label>
     <select id="voiceSelect"></select><br><br>
-    
+
     <textarea id="textInput" rows="4" cols="50" placeholder="Digite o texto aqui..."></textarea><br><br>
     <button onclick="generateAudio()">Gerar Áudio</button>
 
@@ -42,14 +46,14 @@
             const textInput = document.getElementById("textInput").value;
             const voiceSelect = document.getElementById("voiceSelect");
             const selectedVoiceIndex = voiceSelect.value;
-            const categoryName = document.getElementById("categoryName").value;
+            const categorySelect = document.getElementById("categorySelect").value;
 
             if ('speechSynthesis' in window) {
                 const speech = new SpeechSynthesisUtterance(textInput);
                 speech.voice = voices[selectedVoiceIndex]; // Define a voz selecionada
                 speech.lang = voices[selectedVoiceIndex].lang; // Define o idioma da voz
 
-                console.log(`Nome da Categoria: ${categoryName}`); // Exibe o nome da categoria no console
+                console.log(`Categoria Selecionada: ${categorySelect}`); // Exibe a categoria selecionada no console
                 window.speechSynthesis.speak(speech);
             } else {
                 alert("Desculpe, seu navegador não suporta a síntese de voz.");
