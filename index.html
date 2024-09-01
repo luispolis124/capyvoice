@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Áudio de Texto</title>
+</head>
+<body>
+    <h1>Gerador de Áudio de Texto</h1>
+    <textarea id="textInput" rows="4" cols="50" placeholder="Digite o texto aqui..."></textarea><br><br>
+    <button onclick="generateAudio()">Gerar Áudio</button>
+
+    <script>
+        function generateAudio() {
+            const textInput = document.getElementById("textInput").value;
+            
+            if ('speechSynthesis' in window) {
+                const speech = new SpeechSynthesisUtterance(textInput);
+                speech.lang = 'pt-BR'; // Definindo o idioma para português do Brasil
+                window.speechSynthesis.speak(speech);
+            } else {
+                alert("Desculpe, seu navegador não suporta a síntese de voz.");
+            }
+        }
+    </script>
+</body>
+</html>
